@@ -1,47 +1,57 @@
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, CheckBox } from 'react-native';
+import { useState } from 'react';
+import TaskButton from '@/components/TaskButton';
 
-import { useState } from "react";
+interface Task {
+    taskName: string;
+    isCompleted: boolean;
+}
 
 export default function HomeScreen() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loggedIn, setLoggedIn] = useState(false);
+    const [task, setTask] = useState<string>('');
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [checked, setChecked] = useState<boolean>(false);
 
-    const onLogin = () => {
-        if (email === 'matheus@email.com' && password === '123') {
-            setLoggedIn(true);
+    const addTask = () => {
+        if (task) {
+            setTasks([...tasks, { taskName: task, isCompleted: false }]);
+            setTask('');
         }
-    }
+    };
+
+    const toggleTaskCompletion = (index: number) => {
+        const updatedTasks = [...tasks];
+        updatedTasks[index].isCompleted = !updatedTasks[index].isCompleted;
+        setTasks(updatedTasks);
+    };
 
     return (
         <View style={styles.container}>
-            {loggedIn ? (
-                <Text style={styles.loggedInText}>Você está logado!</Text>
-            ) : (
-                <View style={styles.formContainer}>
-                    <Text style={styles.title}>SCHELL SYSYEM</Text>
-                    <TextInput
-                        style={styles.field}
-                        placeholder="Email"
-                        value={email}
-                        onChangeText={setEmail}
-                        keyboardType="email-address"
-                        placeholderTextColor="#888"
-                        testID="email-input"
-                    />
-                    <TextInput
-                        style={styles.field}
-                        placeholder="Senha"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry
-                        placeholderTextColor="#888"
-                    />
-                    <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
-                        <Text style={styles.buttonText}>LOGIN</Text>
-                    </TouchableOpacity>
-                </View>
-            )}
+            <Text style={styles.title}>Checklist de Tarefas</Text>
+
+            <TextInput
+                style={styles.field}
+                placeholder="Digite uma tarefa"
+                value={task}
+                onChangeText={setTask}
+                placeholderTextColor="#888"
+            />
+
+            <TaskButton title={'Adicionar Tarefa'} onPress={addTask} />
+
+            <View style={styles.taskList}>
+                {tasks.map((taskItem, index) => (
+                    <View key={index} style={styles.taskItem}>
+                        <CheckBox
+                            value={taskItem.isCompleted}
+                            onValueChange={() => toggleTaskCompletion(index)}
+                        />
+                        <Text style={[styles.taskText, taskItem.isCompleted && styles.completedText]}>
+                            {taskItem.taskName}
+                        </Text>
+                    </View>
+                ))}
+            </View>
         </View>
     );
 }
@@ -50,9 +60,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         padding: 20,
-        backgroundColor: '#1a1a1a', // Dark background for better contrast
+        backgroundColor: '#1a1a1a',
     },
     title: {
         fontSize: 28,
@@ -60,19 +70,6 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         color: '#fff',
         textAlign: 'center',
-    },
-    loggedInText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#4CAF50', // Green color for success message
-    },
-    formContainer: {
-        width: '100%',
-        paddingHorizontal: 20,
-        backgroundColor: '#2e2e2e', // Slightly lighter background for form container
-        borderRadius: 10,
-        paddingVertical: 30,
-        alignItems: 'center',
     },
     field: {
         width: '100%',
@@ -86,21 +83,23 @@ const styles = StyleSheet.create({
         backgroundColor: '#333',
         color: '#fff',
     },
-    loginButton: {
-        backgroundColor: '#b700ff', // Orange color for the login button
+    taskList: {
         width: '100%',
-        paddingVertical: 15,
-        borderRadius: 8,
+        marginTop: 30,
+        paddingHorizontal: 20,
+    },
+    taskItem: {
+        flexDirection: 'row',
         alignItems: 'center',
+        marginBottom: 15,
     },
-    buttonText: {
+    taskText: {
         fontSize: 18,
-        fontWeight: 'bold',
         color: '#fff',
+        marginLeft: 10,
     },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: '80%',
+    completedText: {
+        textDecorationLine: 'line-through',
+        color: '#888',
     },
 });
