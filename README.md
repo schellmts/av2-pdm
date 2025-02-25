@@ -19,6 +19,7 @@
 #### Se obter sucesso, uma mensagem de sucesso aparecerá.
 
 ### 3: Rodar testes E2E:
-#### Para rodar os testes E2E, rode o seguinte comando:
+#### Para rodar os testes E2E, rode os seguintes comandos:
+### npx expo start --web (para iniciar o ambiente do expo no navegador)
 ### npx cypress open
 #### Ao rodar, ele abrirá a interface gráfica do Cypress, escolha a opção E2E e em seguida procure pelo arquivo tasks.cy.js, ao clicar, ele iniciará os testes simulando um usuário, onde ele adicionará uma tarefa e irá marcá-la como concluída.
